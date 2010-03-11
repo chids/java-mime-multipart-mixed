@@ -1,0 +1,15 @@
+--UxIsy2xB8YvjJFTlYccJjrUGNJS
+Content-Type: multipart/mixed; boundary=TPrG25hqIgi9uX9FmrH9sGgOzf4
+
+--TPrG25hqIgi9uX9FmrH9sGgOzf4
+X-Riak-Vclock: a85hYGBgzGDKBVIsjNGmfhlMiYx5rAx9nz4e4csCAA==
+Location: /raw/bucket/key
+Content-Type: application/json; charset=utf-8
+Link: </raw/bucket>; rel="up"
+Etag: ofiIZNEf9gS8hZMR2xbbG
+Last-Modified: Thu, 18 Feb 2010 17:19:10 GMT
+
+{"foo":"bar", "one":1, "true":true}
+--TPrG25hqIgi9uX9FmrH9sGgOzf4--
+
+--UxIsy2xB8YvjJFTlYccJjrUGNJS--
