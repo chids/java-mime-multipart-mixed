@@ -34,7 +34,7 @@ public final class TestUtil
 
     public static enum Files
     {
-        OCTET_STREAM_FILE("octet-stream.txt"), RIAK_LINK_WALKING_FILE("riak-link-walking-json.txt"), GIF_FILE("gif-sample.txt");
+        OCTET_STREAM_FILE("octet-stream.txt"), RIAK_LINK_WALKING_FILE("riak-link-walking-json.txt"), GIF_FILE("plain-text-and-gif-sample.txt");
 
         public final String filename;
 

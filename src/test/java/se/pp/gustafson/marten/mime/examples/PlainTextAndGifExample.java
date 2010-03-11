@@ -18,17 +18,19 @@ import se.pp.gustafson.marten.mime.tests.TestUtil;
 
 import com.sun.mail.util.BASE64DecoderStream;
 
-public class GifExample extends JPanel implements BodyPartHandler
+public class PlainTextAndGifExample extends JPanel implements BodyPartHandler
 {
     private static final long serialVersionUID = 8478769362814237906L;
-    private static final MimeType MIME_TYPE;
+    private static final MimeType IMAGE_JPEG;
+    private static final MimeType TEXT_PLAIN;
     private byte[] raw;
 
     static
     {
         try
         {
-            MIME_TYPE = new MimeType("image/jpeg");
+            IMAGE_JPEG = new MimeType("image/jpeg");
+            TEXT_PLAIN = new MimeType("text/plain");
         }
         catch(final MimeTypeParseException e)
         {
@@ -46,31 +48,40 @@ public class GifExample extends JPanel implements BodyPartHandler
     @Override
     public void process(final MimeType mimeType, final Object content)
     {
-        if(MIME_TYPE.match(mimeType) && content instanceof BASE64DecoderStream)
+        if(IMAGE_JPEG.match(mimeType) && content instanceof BASE64DecoderStream)
         {
-            try
-            {
-                final BASE64DecoderStream decoder = (BASE64DecoderStream)content;
-                this.raw = new byte[decoder.available()];
-                decoder.read(this.raw);
-                final JFrame f = new JFrame();
-                f.getContentPane().add(this);
-                f.setBounds(0, 0, 100, 100);
-                f.setVisible(true);
-                Thread.sleep(1000);
-            }
-            catch(final IOException e)
-            {
-                e.printStackTrace();
-            }
-            catch(final InterruptedException e)
-            {
-                e.printStackTrace();
-            }
+            renderImage(content);
+        }
+        else if(TEXT_PLAIN.match(mimeType) && content instanceof String)
+        {
+            System.err.println(content);
         }
         else
         {
             throw new IllegalArgumentException("Can't handle " + mimeType.getBaseType() + ", content: " + content);
+        }
+    }
+
+    private void renderImage(final Object content)
+    {
+        try
+        {
+            final BASE64DecoderStream decoder = (BASE64DecoderStream)content;
+            this.raw = new byte[decoder.available()];
+            decoder.read(this.raw);
+            final JFrame f = new JFrame();
+            f.getContentPane().add(this);
+            f.setBounds(0, 0, 100, 100);
+            f.setVisible(true);
+            Thread.sleep(1000);
+        }
+        catch(final IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch(final InterruptedException e)
+        {
+            e.printStackTrace();
         }
     }
 
@@ -90,6 +101,6 @@ public class GifExample extends JPanel implements BodyPartHandler
     @Override
     public MimeType[] appliesTo()
     {
-        return new MimeType[] { MIME_TYPE };
+        return new MimeType[] { IMAGE_JPEG, TEXT_PLAIN };
     }
 }
