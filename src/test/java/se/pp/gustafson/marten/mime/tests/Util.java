@@ -9,7 +9,7 @@ import javax.activation.MimeType;
 
 import org.mockito.ArgumentMatcher;
 
-public final class TestUtil
+public final class Util
 {
     private static final class MimeTypeMatcher extends ArgumentMatcher<MimeType>
     {
@@ -48,7 +48,7 @@ public final class TestUtil
     {
         try
         {
-            final InputStream is = TestUtil.class.getClassLoader().getResourceAsStream(file.filename);
+            final InputStream is = Util.class.getClassLoader().getResourceAsStream(file.filename);
             final byte[] data = new byte[is.available()];
             is.read(data);
             is.close();

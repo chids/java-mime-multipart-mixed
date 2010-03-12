@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import se.pp.gustafson.marten.mime.BodyPartHandler;
 import se.pp.gustafson.marten.mime.MultipartMixed;
-import se.pp.gustafson.marten.mime.tests.TestUtil;
+import se.pp.gustafson.marten.mime.tests.Util;
 
 public class JsonExample implements BodyPartHandler
 {
@@ -33,7 +33,7 @@ public class JsonExample implements BodyPartHandler
     public void json() throws MimeTypeParseException
     {
         final MultipartMixed mm = new MultipartMixed(this);
-        mm.process(TestUtil.readTestFile(TestUtil.Files.RIAK_LINK_WALKING_FILE));
+        mm.process(Util.readTestFile(Util.Files.RIAK_LINK_WALKING_FILE));
         System.err.println(getJson());
     }
 

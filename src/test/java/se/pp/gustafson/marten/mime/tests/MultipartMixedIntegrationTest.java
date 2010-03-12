@@ -29,10 +29,10 @@ public class MultipartMixedIntegrationTest
         final BodyPartHandler handler = mock(BodyPartHandler.class);
         when(handler.appliesTo()).thenReturn(new MimeType[] { octetStream, textPlain });
 
-        new MultipartMixed(handler).process(TestUtil.readTestFile(TestUtil.Files.OCTET_STREAM_FILE));
+        new MultipartMixed(handler).process(Util.readTestFile(Util.Files.OCTET_STREAM_FILE));
 
-        verify(handler).process(TestUtil.eq(textPlain), eq("This is the body of the message."));
-        verify(handler).process(TestUtil.eq(octetStream), isA(BASE64DecoderStream.class));
+        verify(handler).process(Util.eq(textPlain), eq("This is the body of the message."));
+        verify(handler).process(Util.eq(octetStream), isA(BASE64DecoderStream.class));
     }
 
     @Test
@@ -43,8 +43,8 @@ public class MultipartMixedIntegrationTest
         final BodyPartHandler handler = mock(BodyPartHandler.class);
         when(handler.appliesTo()).thenReturn(new MimeType[] { json });
 
-        new MultipartMixed(handler).process(TestUtil.readTestFile(TestUtil.Files.RIAK_LINK_WALKING_FILE));
+        new MultipartMixed(handler).process(Util.readTestFile(Util.Files.RIAK_LINK_WALKING_FILE));
 
-        verify(handler).process(TestUtil.eq(json), isA(ByteArrayInputStream.class));
+        verify(handler).process(Util.eq(json), isA(ByteArrayInputStream.class));
     }
 }
