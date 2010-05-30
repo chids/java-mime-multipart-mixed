@@ -1,92 +1,70 @@
 package se.pp.gustafson.marten.mime.examples;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.awt.Graphics;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.junit.Test;
 
-import se.pp.gustafson.marten.mime.BodyPartHandler;
+import se.pp.gustafson.marten.mime.HandlerMap;
 import se.pp.gustafson.marten.mime.MultipartMixed;
-import se.pp.gustafson.marten.mime.tests.Util;
+import se.pp.gustafson.marten.mime.handlers.Callback;
+import se.pp.gustafson.marten.mime.handlers.JpegHandler;
+import se.pp.gustafson.marten.mime.handlers.PlainTextHandler;
+import se.pp.gustafson.marten.mime.tests.TestUtil;
 
-import com.sun.mail.util.BASE64DecoderStream;
-
-public class PlainTextAndGifExample extends JPanel implements BodyPartHandler
+public class PlainTextAndGifExample extends JPanel
 {
     private static final long serialVersionUID = 8478769362814237906L;
-    private static final MimeType IMAGE_JPEG;
-    private static final MimeType TEXT_PLAIN;
     private byte[] raw;
 
-    static
-    {
-        try
-        {
-            IMAGE_JPEG = new MimeType("image/jpeg");
-            TEXT_PLAIN = new MimeType("text/plain");
-        }
-        catch(final MimeTypeParseException e)
-        {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-    }
-
     @Test
-    public void json() throws MimeTypeParseException
+    public void displayJpegAndVerifyPlainText()
     {
-        final MultipartMixed mm = new MultipartMixed(this);
-        mm.process(Util.readTestFile(Util.Files.GIF_FILE));
+        final MultipartMixed mm = new MultipartMixed(new HandlerMap(new JpegHandler(new Callback<byte[]>()
+        {
+            @Override
+            public void process(final byte[] data)
+            {
+                processImage(data);
+            }
+        }), new PlainTextHandler(new Callback<String>()
+        {
+            @Override
+            public void process(final String data)
+            {
+                assertEquals("This is the plain-text body!\nThank you.", data);
+            }
+        })));
+        mm.process(TestUtil.readTestFile(TestUtil.Files.JPEG_AND_PLAIN_TEXT_FILE));
     }
 
-    @Override
-    public void process(final MimeType mimeType, final Object content)
+    public void processImage(byte[] data)
     {
-        if(IMAGE_JPEG.match(mimeType) && content instanceof BASE64DecoderStream)
-        {
-            renderImage(content);
-        }
-        else if(TEXT_PLAIN.match(mimeType) && content instanceof String)
-        {
-            System.err.println(content);
-        }
-        else
-        {
-            throw new IllegalArgumentException("Can't handle " + mimeType.getBaseType() + ", content: " + content);
-        }
-    }
-
-    private void renderImage(final Object content)
-    {
+        this.raw = data;
+        final JFrame f = new JFrame();
+        f.getContentPane().add(this);
+        f.setBounds(0, 0, 100, 100);
+        f.setVisible(true);
         try
         {
-            final BASE64DecoderStream decoder = (BASE64DecoderStream)content;
-            this.raw = new byte[decoder.available()];
-            decoder.read(this.raw);
-            final JFrame f = new JFrame();
-            f.getContentPane().add(this);
-            f.setBounds(0, 0, 100, 100);
-            f.setVisible(true);
             Thread.sleep(1000);
-        }
-        catch(final IOException e)
-        {
-            e.printStackTrace();
         }
         catch(final InterruptedException e)
         {
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 
     @Override
-    public void paint(Graphics g)
+    public void paint(final Graphics g)
     {
         try
         {
@@ -96,11 +74,5 @@ public class PlainTextAndGifExample extends JPanel implements BodyPartHandler
         {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public MimeType[] appliesTo()
-    {
-        return new MimeType[] { IMAGE_JPEG, TEXT_PLAIN };
     }
 }

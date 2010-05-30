@@ -1,4 +1,5 @@
 package se.pp.gustafson.marten.mime.tests;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -8,10 +9,10 @@ import javax.activation.MimeTypeParseException;
 
 import org.junit.Test;
 
-import se.pp.gustafson.marten.mime.MultipartMixed;
-import se.pp.gustafson.marten.mime.BodyPartHandler;
+import se.pp.gustafson.marten.mime.HandlerMap;
+import se.pp.gustafson.marten.mime.MimeTypeHandler;
 
-public class MultipartMixedTest
+public class HandlerMapTest
 {
     private static final String APPLICATION_JSON = "application/json";
     private static final String APPLICATION_JSON_UTF8 = "application/json; charset=utf-8";
@@ -19,7 +20,7 @@ public class MultipartMixedTest
     @Test
     public void handlerIsMappedToType() throws MimeTypeParseException
     {
-        final BodyPartHandler handler = new BodyPartHandler()
+        final MimeTypeHandler<String> handler = new MimeTypeHandler<String>()
         {
             final MimeType json = new MimeType(APPLICATION_JSON);
 
@@ -30,17 +31,17 @@ public class MultipartMixedTest
             }
 
             @Override
-            public void process(MimeType mimeType, Object content)
+            public void process(final String data)
             {}
         };
-        assertTrue(new MultipartMixed(handler).handles(APPLICATION_JSON));
-        assertSame(handler, new MultipartMixed(handler).getFor(APPLICATION_JSON));
+        assertTrue(new HandlerMap(handler).handles(APPLICATION_JSON));
+        assertSame(handler, new HandlerMap(handler).getFor(APPLICATION_JSON));
     }
 
     @Test
     public void handlerIsMappedToTypeWithoutParameters() throws MimeTypeParseException
     {
-        final BodyPartHandler handler = new BodyPartHandler()
+        final MimeTypeHandler<String> handler = new MimeTypeHandler<String>()
         {
             final MimeType json = new MimeType(APPLICATION_JSON_UTF8);
 
@@ -51,16 +52,16 @@ public class MultipartMixedTest
             }
 
             @Override
-            public void process(MimeType mimeType, Object content)
+            public void process(final String data)
             {}
         };
-        assertTrue(new MultipartMixed(handler).handles(APPLICATION_JSON));
-        assertSame(handler, new MultipartMixed(handler).getFor(APPLICATION_JSON));
+        assertTrue(new HandlerMap(handler).handles(APPLICATION_JSON));
+        assertSame(handler, new HandlerMap(handler).getFor(APPLICATION_JSON));
     }
 
     @Test
-    public void unmappedMimeTypeReturnsNullHandler() throws MimeTypeParseException
+    public void unmappedMimeTypeReturnsNullHandler()
     {
-        assertNotNull(new MultipartMixed(new BodyPartHandler[0]).getFor("nonexistant"));
+        assertNotNull(new HandlerMap(new MimeTypeHandler[0]).getFor("nonexistant"));
     }
 }

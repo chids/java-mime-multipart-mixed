@@ -7,11 +7,17 @@ import java.io.InputStream;
 
 import javax.activation.MimeType;
 
+import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 
-public final class Util
+public final class TestUtil
 {
-    private static final class MimeTypeMatcher extends ArgumentMatcher<MimeType>
+    
+    @Test
+    public void noOpTestToMakeMavenTestPhaseHappy()
+    {}
+    
+    public static final class MimeTypeMatcher extends ArgumentMatcher<MimeType>
     {
         private final MimeType match;
 
@@ -34,7 +40,7 @@ public final class Util
 
     public static enum Files
     {
-        OCTET_STREAM_FILE("octet-stream.txt"), RIAK_LINK_WALKING_FILE("riak-link-walking-json.txt"), GIF_FILE("plain-text-and-gif-sample.txt");
+        OCTET_STREAM_FILE("octet-stream.txt"), RIAK_LINK_WALKING_FILE("riak-link-walking-json.txt"), JPEG_AND_PLAIN_TEXT_FILE("plain-text-and-jpeg-sample.txt");
 
         public final String filename;
 
@@ -48,7 +54,7 @@ public final class Util
     {
         try
         {
-            final InputStream is = Util.class.getClassLoader().getResourceAsStream(file.filename);
+            final InputStream is = TestUtil.class.getClassLoader().getResourceAsStream(file.filename);
             final byte[] data = new byte[is.available()];
             is.read(data);
             is.close();

@@ -1,7 +1,9 @@
 package se.pp.gustafson.marten.mime.tests;
+
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,8 +14,9 @@ import javax.activation.MimeTypeParseException;
 
 import org.junit.Test;
 
+import se.pp.gustafson.marten.mime.HandlerMap;
+import se.pp.gustafson.marten.mime.MimeTypeHandler;
 import se.pp.gustafson.marten.mime.MultipartMixed;
-import se.pp.gustafson.marten.mime.BodyPartHandler;
 
 import com.sun.mail.util.BASE64DecoderStream;
 
@@ -26,13 +29,16 @@ public class MultipartMixedIntegrationTest
         final MimeType octetStream = new MimeType("application/octet-stream");
         final MimeType textPlain = new MimeType("text/plain");
 
-        final BodyPartHandler handler = mock(BodyPartHandler.class);
-        when(handler.appliesTo()).thenReturn(new MimeType[] { octetStream, textPlain });
+        final MimeTypeHandler<String> plainTextHandler = mock(MimeTypeHandler.class);
+        when(plainTextHandler.appliesTo()).thenReturn(new MimeType[] { textPlain });
 
-        new MultipartMixed(handler).process(Util.readTestFile(Util.Files.OCTET_STREAM_FILE));
+        final MimeTypeHandler<BASE64DecoderStream> octetStreamHandler = mock(MimeTypeHandler.class);
+        when(octetStreamHandler.appliesTo()).thenReturn(new MimeType[] { octetStream });
 
-        verify(handler).process(Util.eq(textPlain), eq("This is the body of the message."));
-        verify(handler).process(Util.eq(octetStream), isA(BASE64DecoderStream.class));
+        new MultipartMixed(new HandlerMap(plainTextHandler, octetStreamHandler)).process(TestUtil.readTestFile(TestUtil.Files.OCTET_STREAM_FILE));
+
+        verify(plainTextHandler).process(eq("This is the body of the message."));
+        verify(octetStreamHandler).process(isA(BASE64DecoderStream.class));
     }
 
     @Test
@@ -40,11 +46,11 @@ public class MultipartMixedIntegrationTest
     {
         final MimeType json = new MimeType("application/json");
 
-        final BodyPartHandler handler = mock(BodyPartHandler.class);
+        final MimeTypeHandler<ByteArrayInputStream> handler = mock(MimeTypeHandler.class);
         when(handler.appliesTo()).thenReturn(new MimeType[] { json });
 
-        new MultipartMixed(handler).process(Util.readTestFile(Util.Files.RIAK_LINK_WALKING_FILE));
+        new MultipartMixed(new HandlerMap(handler)).process(TestUtil.readTestFile(TestUtil.Files.RIAK_LINK_WALKING_FILE));
 
-        verify(handler).process(Util.eq(json), isA(ByteArrayInputStream.class));
+        verify(handler, times(2)).process(isA(ByteArrayInputStream.class));
     }
 }

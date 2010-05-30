@@ -1,15 +1,29 @@
---UxIsy2xB8YvjJFTlYccJjrUGNJS
-Content-Type: multipart/mixed; boundary=TPrG25hqIgi9uX9FmrH9sGgOzf4
+--JZi8W8pB0Z3nO3odw11GUB4LQCN
+Content-Type: multipart/mixed; boundary=OjZ8Km9J5vbsmxtcn1p48J91cJP
 
---TPrG25hqIgi9uX9FmrH9sGgOzf4
-X-Riak-Vclock: a85hYGBgzGDKBVIsjNGmfhlMiYx5rAx9nz4e4csCAA==
-Location: /raw/bucket/key
-Content-Type: application/json; charset=utf-8
-Link: </raw/bucket>; rel="up"
-Etag: ofiIZNEf9gS8hZMR2xbbG
-Last-Modified: Thu, 18 Feb 2010 17:19:10 GMT
+--OjZ8Km9J5vbsmxtcn1p48J91cJP
+X-Riak-Vclock: a85hYGDgymDKBVIszMk55zKYEhnzWBlKIniO8kGF2TyvHYIKf0cIszUnMTBzHYVKbIhEUl+VK4spDFTPxhHzFyqhEoVQz7wkSAGLMGuz6FSocFIUijE3pt7HlGBhnqejARXmq0QyZnnxE6jwVJBwFgA=
+Location: /riak/test/doc
+Content-Type: application/json
+Link: </riak/test>; rel="up", </riak/test/doc2>; riaktag="next"
+Etag: 3pvmY35coyWPxh8mh4uBQC
+Last-Modified: Wed, 10 Mar 2010 20:14:13 GMT
 
-{"foo":"bar", "one":1, "true":true}
---TPrG25hqIgi9uX9FmrH9sGgOzf4--
+{"riak":"CAP"}
+--OjZ8Km9J5vbsmxtcn1p48J91cJP--
 
---UxIsy2xB8YvjJFTlYccJjrUGNJS--
+--JZi8W8pB0Z3nO3odw11GUB4LQCN
+Content-Type: multipart/mixed; boundary=RJKFlAs9PrdBNfd74HANycvbA8C
+
+--RJKFlAs9PrdBNfd74HANycvbA8C
+X-Riak-Vclock: a85hYGBgzGDKBVIsbLvm1WYwJTLmsTLcjeE5ypcFAA==
+Location: /riak/test/doc2
+Content-Type: application/json
+Link: </riak/test>; rel="up"
+Etag: 6dQBm9oYA1mxRSH0e96l5W
+Last-Modified: Wed, 10 Mar 2010 18:11:41 GMT
+
+{"foo":"bar"}
+--RJKFlAs9PrdBNfd74HANycvbA8C--
+
+--JZi8W8pB0Z3nO3odw11GUB4LQCN--

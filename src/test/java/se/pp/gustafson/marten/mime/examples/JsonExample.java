@@ -1,73 +1,59 @@
 package se.pp.gustafson.marten.mime.examples;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 
 import org.junit.Test;
 
-import se.pp.gustafson.marten.mime.BodyPartHandler;
+import se.pp.gustafson.marten.mime.HandlerMap;
+import se.pp.gustafson.marten.mime.MimeTypeHandler;
 import se.pp.gustafson.marten.mime.MultipartMixed;
-import se.pp.gustafson.marten.mime.tests.Util;
+import se.pp.gustafson.marten.mime.tests.TestUtil;
 
-public class JsonExample implements BodyPartHandler
+/**
+ * Example implementation for parsing mutliple chunks of JSON data.
+ * 
+ * Run as part of the other Junit tests, hence the test method at the bottom.
+ */
+public class JsonExample implements MimeTypeHandler<ByteArrayInputStream>
 {
-    private static final MimeType MIME_TYPE;
-    private String json;
+    private static final MimeType APPLICATION_JSON = MimeTypeHandler.Util.mimeTypeForString("application/json");
+    private List<String> json;
 
-    static
+    public MimeType[] appliesTo()
     {
-        try
-        {
-            MIME_TYPE = new MimeType("application/json");
-        }
-        catch(final MimeTypeParseException e)
-        {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+        return new MimeType[] { APPLICATION_JSON };
     }
 
     @Test
-    public void json() throws MimeTypeParseException
+    public void verifyMultipleJsonChunks()
     {
-        final MultipartMixed mm = new MultipartMixed(this);
-        mm.process(Util.readTestFile(Util.Files.RIAK_LINK_WALKING_FILE));
-        System.err.println(getJson());
+        this.json = new ArrayList<String>();
+        final MultipartMixed mm = new MultipartMixed(new HandlerMap(this));
+        mm.process(TestUtil.readTestFile(TestUtil.Files.RIAK_LINK_WALKING_FILE));
+        assertEquals(2, this.json.size());
+        assertEquals("{\"riak\":\"CAP\"}", this.json.get(0));
+        assertEquals("{\"foo\":\"bar\"}", this.json.get(1));
     }
 
     @Override
-    public void process(final MimeType mimeType, final Object content)
+    public void process(final ByteArrayInputStream bos)
     {
-        if(MIME_TYPE.match(mimeType) && content instanceof ByteArrayInputStream)
+        try
         {
-            try
-            {
-                final ByteArrayInputStream bos = (ByteArrayInputStream)content;
-                final byte[] raw = new byte[bos.available()];
-                bos.read(raw);
-                this.json = new String(raw);
-            }
-            catch(final IOException e)
-            {
-                e.printStackTrace();
-            }
+            final byte[] raw = new byte[bos.available()];
+            bos.read(raw);
+            this.json.add(new String(raw));
         }
-        else
+        catch(final IOException e)
         {
-            throw new IllegalArgumentException("Can't handle " + mimeType.getBaseType() + ", content: " + content);
+            e.printStackTrace();
         }
-    }
-
-    @Override
-    public MimeType[] appliesTo()
-    {
-        return new MimeType[] { MIME_TYPE };
-    }
-
-    public String getJson()
-    {
-        return this.json;
     }
 }
